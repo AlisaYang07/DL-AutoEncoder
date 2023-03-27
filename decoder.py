@@ -78,5 +78,5 @@ class ResNet18Dec(nn.Module):
         x = self.layer2(x)
         x = self.layer1(x)
         x = self.conv1(x)
-        #x = x.view(x.size(0), 3, 32, 32)
+        x = x.view(x.size(0), 3, 32, 32)
         return x

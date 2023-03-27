@@ -1,3 +1,4 @@
+import torch
 import torch.nn.functional as F
 import torch.nn as nn
 
@@ -37,10 +38,10 @@ class BasicBlockDec(nn.Module):
             )
 
     def forward(self, x):
-        out = torch.relu(self.bn2(self.conv2(x)))
+        out = nn.ReLU(self.bn2(self.conv2(x)))
         out = self.bn1(self.conv1(out))
         out += self.shortcut(x)
-        out = torch.relu(out)
+        out = nn.ReLU(out)
         return out
 
 
@@ -78,15 +79,3 @@ class ResNet18Dec(nn.Module):
         x = torch.sigmoid(self.conv1(x))
         x = x.view(x.size(0), 3, 64, 64)
         return x
-
-class resnet_AE(nn.Module):
-
-    def __init__(self,z_dim):
-        super().__init__()
-        self.encoder = resnet18()
-        self.decoder = ResNet18Dec(z_dim=z_dim)
-
-    def forward(self, x):
-           out = self.encoder(x)
-           out = self.decoder(x)
-           return out

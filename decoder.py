@@ -24,6 +24,7 @@ class BasicBlockDec(nn.Module):
 
         self.conv2 = nn.ConvTranspose2d(in_planes, in_planes, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(in_planes)
+        self.relu = nn.ReLU(inplace=True)
 
         if stride == 1:
             self.conv1 = nn.ConvTranspose2d(in_planes, planes, kernel_size=3, stride=1, padding=1, bias=False)
@@ -38,10 +39,10 @@ class BasicBlockDec(nn.Module):
             )
 
     def forward(self, x):
-        out = nn.ReLU(self.bn2(self.conv2(x)))
+        out = self.relu(self.bn2(self.conv2(x)))
         out = self.bn1(self.conv1(out))
         out += self.shortcut(x)
-        out = nn.ReLU(out)
+        out = self.relu(out)
         return out
 
 
@@ -58,7 +59,7 @@ class ResNet18Dec(nn.Module):
         self.layer3 = self._make_layer(BasicBlockDec, 128, num_Blocks[2], stride=2)
         self.layer2 = self._make_layer(BasicBlockDec, 64, num_Blocks[1], stride=2)
         self.layer1 = self._make_layer(BasicBlockDec, 64, num_Blocks[0], stride=1)
-        self.conv1 = ResizeConv2d(64, nc, kernel_size=3, scale_factor=2)
+        self.conv1 = ResizeConv2d(64, nc, kernel_size=3, scale_factor=1)
 
     def _make_layer(self, BasicBlockDec, planes, num_Blocks, stride):
         strides = [stride] + [1]*(num_Blocks-1)
@@ -76,6 +77,6 @@ class ResNet18Dec(nn.Module):
         x = self.layer3(x)
         x = self.layer2(x)
         x = self.layer1(x)
-        x = torch.sigmoid(self.conv1(x))
-        x = x.view(x.size(0), 3, 64, 64)
+        x = self.conv1(x)
+        #x = x.view(x.size(0), 3, 32, 32)
         return x

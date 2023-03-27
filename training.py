@@ -56,8 +56,8 @@ def train(model,
         train_loss = 0.0
         valid_loss = 0.0
 
-        train_acc = 0
-        valid_acc = 0
+        #train_acc = 0
+        #valid_acc = 0
 
         # Set to training
         model.train()
@@ -73,7 +73,7 @@ def train(model,
             optimizer.zero_grad()
             # Predicted outputs are log probabilities
             output = model(data)
-
+            
             # Loss and backpropagation of gradients
             loss = criterion(output, data)
             loss.backward()
@@ -84,13 +84,6 @@ def train(model,
             # Track train loss by multiplying average loss by number of examples in batch
             train_loss += loss.item() * data.size(0)
 
-            # Calculate accuracy by finding max log probability
-            _, pred = torch.max(output, dim=1)
-            correct_tensor = pred.eq(target.data.view_as(pred))
-            # Need to convert correct tensor from int to float to average
-            accuracy = torch.mean(correct_tensor.type(torch.FloatTensor))
-            # Multiply average accuracy times the number of examples in batch
-            train_acc += accuracy.item() * data.size(0)
 
             # Track training progress
             print(
@@ -116,36 +109,24 @@ def train(model,
                     output = model(data)
 
                     # Validation loss
-                    loss = criterion(output, target)
+                    loss = criterion(output, data)
                     # Multiply average loss times the number of examples in batch
                     valid_loss += loss.item() * data.size(0)
 
-                    # Calculate validation accuracy
-                    _, pred = torch.max(output, dim=1)
-                    correct_tensor = pred.eq(target.data.view_as(pred))
-                    accuracy = torch.mean(
-                        correct_tensor.type(torch.FloatTensor))
-                    # Multiply average accuracy times the number of examples
-                    valid_acc += accuracy.item() * data.size(0)
 
                 # Calculate average losses
                 train_loss = train_loss / len(train_loader.dataset)
                 valid_loss = valid_loss / len(valid_loader.dataset)
 
-                # Calculate average accuracy
-                train_acc = train_acc / len(train_loader.dataset)
-                valid_acc = valid_acc / len(valid_loader.dataset)
 
-                history.append([train_loss, valid_loss, train_acc, valid_acc])
+                history.append([train_loss, valid_loss])
 
                 # Print training and validation results
                 if (epoch + 1) % print_every == 0:
                     print(
                         f'\nEpoch: {epoch} \tTraining Loss: {train_loss:.4f} \tValidation Loss: {valid_loss:.4f}'
                     )
-                    print(
-                        f'\t\tTraining Accuracy: {100 * train_acc:.2f}%\t Validation Accuracy: {100 * valid_acc:.2f}%'
-                    )
+
 
                 # Save the model if validation loss decreases
                 if valid_loss < valid_loss_min:
@@ -154,7 +135,6 @@ def train(model,
                     # Track improvement
                     epochs_no_improve = 0
                     valid_loss_min = valid_loss
-                    valid_best_acc = valid_acc
                     best_epoch = epoch
 
                 # Otherwise increment count of epochs with no improvement
@@ -163,7 +143,7 @@ def train(model,
                     # Trigger early stopping
                     if epochs_no_improve >= max_epochs_stop:
                         print(
-                            f'\nEarly Stopping! Total epochs: {epoch}. Best epoch: {best_epoch} with loss: {valid_loss_min:.2f} and acc: {100 * valid_acc:.2f}%'
+                            f'\nEarly Stopping! Total epochs: {epoch}. Best epoch: {best_epoch} with loss: {valid_loss_min:.2f}'
                         )
                         total_time = timer() - overall_start
                         print(
@@ -179,9 +159,7 @@ def train(model,
                         history = pd.DataFrame(
                             history,
                             columns=[
-                                'train_loss', 'valid_loss', 'train_acc',
-                                'valid_acc'
-                            ])
+                                'train_loss', 'valid_loss'])
                         return model, history
 
     # Attach the optimizer
@@ -189,7 +167,7 @@ def train(model,
     # Record overall time and print out stats
     total_time = timer() - overall_start
     print(
-        f'\nBest epoch: {best_epoch} with loss: {valid_loss_min:.2f} and acc: {100 * valid_acc:.2f}%'
+        f'\nBest epoch: {best_epoch} with loss: {valid_loss_min:.2f}'
     )
     print(
         f'{total_time:.2f} total seconds elapsed. {total_time / (epoch):.2f} seconds per epoch.'
@@ -197,5 +175,5 @@ def train(model,
     # Format history
     history = pd.DataFrame(
         history,
-        columns=['train_loss', 'valid_loss', 'train_acc', 'valid_acc'])
+        columns=['train_loss', 'valid_loss'])
     return model, history

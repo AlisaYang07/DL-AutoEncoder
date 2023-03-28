@@ -1,3 +1,5 @@
+import torch.nn as nn
+
 class AutoEncoder(nn.Module):
     def __init__(self,encoder_model, decoder_model, z_dim = 10):
         super().__init__()

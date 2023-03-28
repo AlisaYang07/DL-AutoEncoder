@@ -1,3 +1,4 @@
+# from encoder import *
 import torch
 import torch.nn as nn
 from torchmetrics import Accuracy
@@ -124,7 +125,7 @@ class ResNet(nn.Module):
         self,
         block,
         layers,
-        num_classes=10,
+        num_classes,
         zero_init_residual=False,
         groups=1,
         width_per_group=64,
@@ -248,8 +249,8 @@ class ResNet(nn.Module):
         return x
 
 
-def _resnet(arch, block, layers, pretrained, progress, device, **kwargs):
-    model = ResNet(block, layers, **kwargs)
+def _resnet(arch, block, layers, pretrained, progress, device, num_classes, **kwargs):
+    model = ResNet(block, layers, num_classes,**kwargs)
     if pretrained:
         script_dir = '.'
         state_dict = torch.load(
@@ -259,14 +260,14 @@ def _resnet(arch, block, layers, pretrained, progress, device, **kwargs):
     return model
 
 
-def resnet18(pretrained=False, progress=True, device="cpu", **kwargs):
+def resnet18(pretrained=False, progress=True, device="cpu",num_classes=10, **kwargs):
     """Constructs a ResNet-18 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     return _resnet(
-        "resnet18", BasicBlock, [2, 2, 2, 2], pretrained, progress, device, **kwargs
+        "resnet18", BasicBlock, [2, 2, 2, 2], pretrained, progress, device, num_classes, **kwargs
     )
 
 def _classification_eval(model, dataloader):
@@ -298,4 +299,3 @@ def _classification_eval(model, dataloader):
     print("Avg. Model accuracy: %.2f%%" % (avg_val_acc*100))
 
     return avg_val_acc
-

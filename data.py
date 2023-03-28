@@ -29,7 +29,7 @@ def get_datasets(download_path = './data'):
     train_ds = CIFAR10(root = download_path, train = True, transform = transform, download = True)
     test = CIFAR10(root = download_path, train = False, transform = transform, download = True)
     torch.manual_seed(0)
-    val_ds, test_ds = random_split(test,[0.5,0.5])
+    val_ds, test_ds = random_split(test,[5000,5000])
     return train_ds, val_ds, test_ds
 
 def test_global():

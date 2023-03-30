@@ -71,7 +71,7 @@ def main(bottle_neck, batch_size = 64, experiment_type = 1, optimizer = "Adam", 
 
     elif experiment_type == 2: 
         ## Trained from frozen weights
-        encoder_ = encoder.resnet18(pretrained=True,num_classes=bn)
+        encoder_ = encoder.resnet18(pretrained=True)
         decoder_ = decoder.ResNet18Dec(z_dim=bn)
         for param in encoder_.parameters():
             param.requires_grad = False
@@ -82,9 +82,9 @@ def main(bottle_neck, batch_size = 64, experiment_type = 1, optimizer = "Adam", 
     
     else: 
         ## Trained from pretrained init weights
-        encoder_ = encoder.resnet18(pretrained=True,num_classes=bn)
+        encoder_ = encoder.resnet18(pretrained=True)
         decoder_ = decoder.ResNet18Dec(z_dim=bn)
-        
+
         encoder_.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         encoder_.fc = nn.Linear(in_features=512, out_features=bn, bias=True)
         exp_name = f"Pretrained_Init_AE_{bn}"
@@ -120,9 +120,4 @@ def main(bottle_neck, batch_size = 64, experiment_type = 1, optimizer = "Adam", 
     
     ## Save a image for OG and the output
     peek_results(dataloader_test, model, bn, exp_name)
-
-main(bottle_neck=8)
-    
-
-
 

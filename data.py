@@ -35,8 +35,8 @@ def get_datasets(download_path = './data'):
 def test_global():
     return test
 
-def dataset_to_dataloader(dataset, batch_size = 64):
-    return DataLoader(dataset, batch_size= batch_size, shuffle = True, num_workers = 2)
+def dataset_to_dataloader(dataset, batch_size = 64, shuffle = True):
+    return DataLoader(dataset, batch_size= batch_size, shuffle = shuffle, num_workers = 2)
 
 def _get_viewable_img(img):
     img = img / 2 + 0.5     # unnormalize

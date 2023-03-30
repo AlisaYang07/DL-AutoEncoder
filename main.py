@@ -110,13 +110,13 @@ def main(bottle_neck, batch_size = 64, experiment_type = 1, optimizer = "Adam", 
             optimizer,
             dataloader_train,
             dataloader_val,
-            save_file_name=f'History_{exp_name}_{bn}.pt',
+            save_file_name=f'{exp_name}.pt',
             max_epochs_stop = 5,
             n_epochs = 30,
             print_every = 1)
     
     ## Save training time and loss
-    hist.to_csv(f'History_{exp_name}_{bn}.csv')
+    hist.to_csv(f'History_{exp_name}.csv')
     
     ## Save a image for OG and the output
     peek_results(dataloader_test, model, bn, exp_name)

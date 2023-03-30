@@ -1,0 +1,17 @@
+TODOs
+More metrics 
+-- SSIM 
+-- Classification layer? 
+-- The weight of the kernel (see what we are seeing, or is it pixel by pixel)
+-- Local Minimas 
+-- edit the training file so it also saves the training time. 
+
+Future Work
+-- Use different models, VGG16, restnet50, restnet32 etc. 
+-- hyperparmeter tunning (batch size, learning rate, optimizer, bottleneck size, early stopping. )
+-- data augmentation
+-- training not diminishing even in the frozen weight
+
+
+We want to see if the pretrained modle cna perform as well with a smaller bottle neck compared to the from scratch. 
+We plan to evalute it from Val loss + SSIM + Classification in the original restnet18. 

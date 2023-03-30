@@ -117,9 +117,9 @@ def train(model,
                 # Calculate average losses
                 train_loss = train_loss / len(train_loader.dataset)
                 valid_loss = valid_loss / len(valid_loader.dataset)
+                time = timer() - start
 
-
-                history.append([train_loss, valid_loss])
+                history.append([train_loss, valid_loss,time])
 
                 # Print training and validation results
                 if (epoch + 1) % print_every == 0:
@@ -159,7 +159,7 @@ def train(model,
                         history = pd.DataFrame(
                             history,
                             columns=[
-                                'train_loss', 'valid_loss'])
+                                'train_loss', 'valid_loss', 'time'])
                         return model, history
 
     # Attach the optimizer
@@ -175,5 +175,5 @@ def train(model,
     # Format history
     history = pd.DataFrame(
         history,
-        columns=['train_loss', 'valid_loss'])
+        columns=['train_loss', 'valid_loss','time'])
     return model, history

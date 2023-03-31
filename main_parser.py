@@ -69,9 +69,9 @@ def main(args):
         decoder_ = decoder.ResNet18Dec(z_dim=bn)
         exp_name = f"AE_{bn}"
 
-    elif args.experiment_type == 2: 
+    elif args.experiment_type == 2:
         ## Trained from frozen weights
-        encoder_ = encoder.resnet18(pretrained=True,num_classes=bn)
+        encoder_ = encoder.resnet18(pretrained=True)
         decoder_ = decoder.ResNet18Dec(z_dim=bn)
         for param in encoder_.parameters():
             param.requires_grad = False
@@ -82,15 +82,12 @@ def main(args):
     
     else: 
         ## Trained from pretrained init weights
-        encoder_ = encoder.resnet18(pretrained=True,num_classes=bn)
+        encoder_ = encoder.resnet18(pretrained=True)
         decoder_ = decoder.ResNet18Dec(z_dim=bn)
-        for param in encoder_.parameters():
-            param.requires_grad = False
 
         encoder_.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         encoder_.fc = nn.Linear(in_features=512, out_features=bn, bias=True)
         exp_name = f"Pretrained_Init_AE_{bn}"
-
 
     criterion = nn.MSELoss()
     model = autoencoder.AutoEncoder(encoder_, decoder_)
@@ -112,7 +109,7 @@ def main(args):
             optimizer,
             dataloader_train,
             dataloader_val,
-            save_file_name=f'History_{exp_name}_{bn}.pt',
+            save_file_name=f'{exp_name}.pt',
             max_epochs_stop = 5,
             n_epochs = 30,
             print_every = 1)
@@ -122,8 +119,6 @@ def main(args):
     
     ## Save a image for OG and the output
     peek_results(dataloader_test, model, bn, exp_name)
-    
-
 
     
 if __name__ == "__main__": 

@@ -88,11 +88,12 @@ def train(model,
             # Clear gradients
             optimizer.zero_grad()
             # Predicted outputs are log probabilities
-            output, mean, var = model(data)
+            x_hat = model(data)
             
             # Loss and backpropagation of gradients
             # loss = criterion(output, data)
-            loss = loss_function(data, output, mean, var)
+
+            loss = ((data - x_hat) **2).sum() + model.encoder.k1
             loss.backward()
 
             # Update the parameters
@@ -123,11 +124,11 @@ def train(model,
                         data, target = data.cuda(), target.cuda()
 
                     # Forward pass
-                    output, mean, var = model(data)
+                    x_hat = model(data)
                     
                     # Loss and backpropagation of gradients
                     # loss = criterion(output, data)
-                    loss = loss_function(data, output, mean, var)
+                    loss = ((data - x_hat) **2).sum() + model.encoder.k1
 
                     # Multiply average loss times the number of examples in batch
                     valid_loss += loss.item() * data.size(0)

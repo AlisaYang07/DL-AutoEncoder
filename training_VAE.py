@@ -5,11 +5,17 @@ import torch
 import pandas as pd
 
 # BCE_loss = nn.BCELoss()
+MSE_loss = nn.MSELoss(reduction='sum')
 
-def loss_function(x, x_hat, mean, log_var):
-    reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
+def loss_function(x, x_hat, mean, log_var,batch_size):
+    # reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
+    #reproduction_loss = ((x - x_hat) **2).sum()
+    reproduction_loss = MSE_loss(x_hat, x)
     KLD      = - 0.5 * torch.sum(1+ log_var - mean.pow(2) - log_var.exp())
-    return reproduction_loss + KLD
+    return (reproduction_loss + KLD)/batch_size
+
+#https://www.machinelearningnuggets.com/how-to-generate-images-with-variational-autoencoders-vae-and-keras/
+
 
 # def gaussian_likelihood(self, x_hat, logscale, x):
 #         scale = torch.exp(logscale)
@@ -92,7 +98,8 @@ def train(model,
             
             # Loss and backpropagation of gradients
             # loss = criterion(output, data)
-            loss = loss_function(data, output, mean, var)
+            bs = 64
+            loss = loss_function(data, output, mean, var, bs)
             loss.backward()
 
             # Update the parameters
@@ -127,7 +134,7 @@ def train(model,
                     
                     # Loss and backpropagation of gradients
                     # loss = criterion(output, data)
-                    loss = loss_function(data, output, mean, var)
+                    loss = loss_function(data, output, mean, var,64)
 
                     # Multiply average loss times the number of examples in batch
                     valid_loss += loss.item() * data.size(0)

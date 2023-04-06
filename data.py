@@ -21,9 +21,15 @@ train_transform = T.Compose(
         )
 """
 
-transform = transforms.Compose([transforms.ToTensor(),
-                                transforms.Normalize((0.4914, 0.4822, 0.4465),      #CIFAR-10 Mean
-                                                     (0.2471, 0.2435, 0.2616))])    #CIFAR-10 STD
+transform = transforms.Compose([transforms.ToTensor()
+                                # ,transforms.RandomCrop(32, padding=4)
+                                # ,transforms.RandomHorizontalFlip()
+                                ,transforms.Normalize((0.4914, 0.4822, 0.4465),      #CIFAR-10 Mean
+                                                     (0.2471, 0.2435, 0.2616)) #CIFAR-10 STD
+                                                     ])    
+transform_test = transforms.Compose([transforms.ToTensor()
+                                                     ])    
+
 
 def get_datasets(download_path = './data'):
     train_ds = CIFAR10(root = download_path, train = True, transform = transform, download = True)

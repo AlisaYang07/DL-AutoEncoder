@@ -12,14 +12,14 @@ def reconstruction_loss(x_reconstructed, x):
 def kl_divergence_loss(mean, logvar):
     return ((mean**2 + logvar.exp() - 1 - logvar) / 2).mean()
 
-def loss_function(x, x_hat, mean, log_var):
+def loss_function(x, x_hat, mean, log_var, beta):
     # reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
     #reproduction_loss = ((x - x_hat) **2).sum()
     # reproduction_loss = MSE_loss(x_hat, x)
     # KLD      = - 0.5 * torch.sum(1+ log_var - mean.pow(2) - log_var.exp())
     reproduction_loss = reconstruction_loss(x_hat, x)
-    # KLD = kl_divergence_loss(mean, log_var)
-    KLD = 0
+    KLD = beta * kl_divergence_loss(mean, log_var)
+    # KLD = 0
     return reproduction_loss + KLD
 
 #https://www.machinelearningnuggets.com/how-to-generate-images-with-variational-autoencoders-vae-and-keras/
@@ -42,7 +42,8 @@ def train(model,
           save_file_name,
           max_epochs_stop=3,
           n_epochs=20,
-          print_every=2):
+          print_every=2,
+          beta=1):
     """Train a PyTorch Model
 
     Params
@@ -106,7 +107,7 @@ def train(model,
             
             # Loss and backpropagation of gradients
             # loss = criterion(output, data)
-            loss = loss_function(data, output, mean, var)
+            loss = loss_function(data, output, mean, var, beta)
             loss.backward()
 
             # Update the parameters
@@ -141,7 +142,7 @@ def train(model,
                     
                     # Loss and backpropagation of gradients
                     # loss = criterion(output, data)
-                    loss = loss_function(data, output, mean, var)
+                    loss = loss_function(data, output, mean, var, beta)
 
                     # Multiply average loss times the number of examples in batch
                     valid_loss += loss.item() * data.size(0)
@@ -203,7 +204,7 @@ def train(model,
         f'\nBest epoch: {best_epoch} with loss: {valid_loss_min:.2f}'
     )
     print(
-        f'{total_time:.2f} total seconds elapsed. {total_time / (epoch):.2f} seconds per epoch.'
+        f'{total_time:.2f} total seconds elapsed. {total_time / (epoch+1):.2f} seconds per epoch.'
     )
     # Format history
     history = pd.DataFrame(

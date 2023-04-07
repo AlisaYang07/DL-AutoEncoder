@@ -115,8 +115,7 @@ def train(model,
 
             # Track train loss by multiplying average loss by number of examples in batch
             train_loss += loss.item() 
-
-
+            
             # Track training progress
             print(
                 f'Epoch: {epoch}\t{100 * (ii + 1) / len(train_loader):.2f}% complete. {timer() - start:.2f} seconds elapsed in epoch.',

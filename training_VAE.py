@@ -20,7 +20,7 @@ def loss_function(x, x_hat, mean, log_var, beta):
     reproduction_loss = reconstruction_loss(x_hat, x)
     KLD = beta * kl_divergence_loss(mean, log_var)
     # KLD = 0
-    return reproduction_loss + KLD / x.size(0)
+    return reproduction_loss + KLD
 
 #https://www.machinelearningnuggets.com/how-to-generate-images-with-variational-autoencoders-vae-and-keras/
 
@@ -126,6 +126,9 @@ def train(model,
         else:
             model.epochs += 1
 
+            total_recon_loss = 0
+            total_KL_loss = 0
+
             # Don't need to keep track of gradients
             with torch.no_grad():
                 # Set to evaluation mode
@@ -142,23 +145,28 @@ def train(model,
                     
                     # Loss and backpropagation of gradients
                     # loss = criterion(output, data)
+                    recon_loss = reconstruction_loss(output, data)
+                    KL_loss = beta * kl_divergence_loss(mean, var)
                     loss = loss_function(data, output, mean, var, beta)
 
                     # Multiply average loss times the number of examples in batch
-                    valid_loss += loss.item() * data.size(0)
-
+                    valid_loss += loss.item()
+                    total_recon_loss += recon_loss
+                    total_KL_loss += KL_loss
 
                 # Calculate average losses
                 train_loss = train_loss / len(train_loader.dataset)
                 valid_loss = valid_loss / len(valid_loader.dataset)
+                avg_recon_loss = total_recon_loss/ len(valid_loader.dataset)
+                avg_KL_loss = total_KL_loss/ len(valid_loader.dataset)
                 time = timer() - start
 
-                history.append([train_loss, valid_loss,time])
+                history.append([train_loss, valid_loss, avg_recon_loss.item(), avg_KL_loss.item(), time])
 
                 # Print training and validation results
                 if (epoch + 1) % print_every == 0:
                     print(
-                        f'\nEpoch: {epoch} \tTraining Loss: {train_loss:.4f} \tValidation Loss: {valid_loss:.4f}'
+                        f'\nEpoch: {epoch} \tTraining Loss: {train_loss:.4f} \tValidation Loss: {valid_loss:.4f} \tReconstruction Loss: {avg_recon_loss:.4f} \tKL Loss: {avg_KL_loss:.4f} '
                     )
 
 
@@ -173,6 +181,7 @@ def train(model,
 
                 # Otherwise increment count of epochs with no improvement
                 else:
+                    
                     epochs_no_improve += 1
                     # Trigger early stopping
                     if epochs_no_improve >= max_epochs_stop:
@@ -193,7 +202,7 @@ def train(model,
                         history = pd.DataFrame(
                             history,
                             columns=[
-                                'train_loss', 'valid_loss', 'time'])
+                                'train_loss', 'valid_loss', 'avg_recon_loss', 'avg_KL_loss', 'time'])
                         return model, history
 
     # Attach the optimizer
@@ -209,5 +218,5 @@ def train(model,
     # Format history
     history = pd.DataFrame(
         history,
-        columns=['train_loss', 'valid_loss','time'])
+        columns=['train_loss', 'valid_loss', 'avg_recon_loss', 'avg_KL_loss', 'time'])
     return model, history

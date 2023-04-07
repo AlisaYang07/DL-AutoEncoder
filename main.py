@@ -72,7 +72,13 @@ def peek_results(dataloader, model, exp_name):
     break
 
 
-def main(bottle_neck, batch_size = 64, experiment_type = 1, lr = 0.001, beta=1, n_epoch= 30):
+if __name__=='__main__':
+    bottle_neck = 128
+    batch_size = 64
+    experiment_type = 1
+    lr = 0.001
+    beta = 1
+    n_epoch = 15
     #Load data
     
     train_ds, val_ds, test_ds = data.get_datasets()

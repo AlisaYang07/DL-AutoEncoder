@@ -1,4 +1,14 @@
 TODOs
+VAE: 
+Implement VAE, change autoencoder + loss funciton Tuesday April 4th (Done!)
+
+Explore hyperparameters
+Kernel (maybe?)
+Literature review 
+
+Generazability (trianed in 10 categories but tested on 1)
+
+
 More metrics 
 -- SSIM 
 -- Classification layer? 

@@ -35,24 +35,12 @@ class UnNormalize(object):
             Tensor: Normalized image.
         """
         with torch.no_grad():
-          for t, m, s in zip(tensor, self.mean, self.std):
-              t.mul_(s).add_(m)
-              # The normalize code -> t.sub_(m).div_(s)
+          for img in tensor:
+            for t, m, s in zip(img, self.mean, self.std):
+                t.mul_(s).add_(m)
+                # The normalize code -> t.sub_(m).div_(s)
           return tensor
 
-# def peek_results(dataloader, model, bottle_neck, exp_name):
-#   unorm = UnNormalize(mean=(0.4914, 0.4822, 0.4465), std=(0.2471, 0.2435, 0.2616))
-#   for img, lb in dataloader:
-#     fig, ax = plt.subplots(figsize=(16,8))
-#     fig1, ax1 = plt.subplots(figsize=(16,8))
-#     ax.set_xticks([]); ax.set_yticks([])
-#     ax1.set_xticks([]); ax1.set_yticks([])
-#     img_output = model(img.cuda()).cpu()
-#     ax.imshow(make_grid(unorm(img_output), nrow=16).permute(1,2,0))
-#     fig.savefig(f"{exp_name}_{bottle_neck}")
-#     ax1.imshow(make_grid(img, nrow=16).permute(1,2,0))
-#     fig1.savefig(f"{exp_name}_{bottle_neck}_OG")
-#     break
 
 def peek_results(dataloader, model, exp_name):
   unorm = UnNormalize(mean=(0.4914, 0.4822, 0.4465), std=(0.2471, 0.2435, 0.2616))
@@ -72,13 +60,7 @@ def peek_results(dataloader, model, exp_name):
     break
 
 
-if __name__=='__main__':
-    bottle_neck = 128
-    batch_size = 64
-    experiment_type = 1
-    lr = 0.001
-    beta = 1
-    n_epoch = 15
+def main(bottle_neck, batch_size = 64, experiment_type = 1, lr = 0.001, beta=1, n_epoch= 30):
     #Load data
     
     train_ds, val_ds, test_ds = data.get_datasets()

@@ -19,8 +19,7 @@ def loss_function(x, x_hat, mean, log_var, beta):
     # KLD      = - 0.5 * torch.sum(1+ log_var - mean.pow(2) - log_var.exp())
     reproduction_loss = reconstruction_loss(x_hat, x)
     KLD = beta * kl_divergence_loss(mean, log_var)
-    # KLD = 0
-    return reproduction_loss + KLD
+    return reproduction_loss + KLD 
 
 #https://www.machinelearningnuggets.com/how-to-generate-images-with-variational-autoencoders-vae-and-keras/
 
@@ -107,6 +106,7 @@ def train(model,
             
             # Loss and backpropagation of gradients
             # loss = criterion(output, data)
+            
             loss = loss_function(data, output, mean, var, beta)
             loss.backward()
 
@@ -114,7 +114,7 @@ def train(model,
             optimizer.step()
 
             # Track train loss by multiplying average loss by number of examples in batch
-            train_loss += loss.item() * data.size(0)
+            train_loss += loss.item() 
 
 
             # Track training progress
@@ -125,7 +125,6 @@ def train(model,
         # After training loops ends, start validation
         else:
             model.epochs += 1
-
             total_recon_loss = 0
             total_KL_loss = 0
 
@@ -157,11 +156,12 @@ def train(model,
                 # Calculate average losses
                 train_loss = train_loss / len(train_loader.dataset)
                 valid_loss = valid_loss / len(valid_loader.dataset)
-                avg_recon_loss = total_recon_loss/ len(valid_loader.dataset)
-                avg_KL_loss = total_KL_loss/ len(valid_loader.dataset)
+                avg_recon_loss = total_recon_loss / len(valid_loader.dataset)
+                avg_KL_loss = total_KL_loss / len(valid_loader.dataset)
+
                 time = timer() - start
 
-                history.append([train_loss, valid_loss, avg_recon_loss.item(), avg_KL_loss.item(), time])
+                history.append([train_loss, valid_loss, avg_recon_loss, avg_KL_loss, time])
 
                 # Print training and validation results
                 if (epoch + 1) % print_every == 0:

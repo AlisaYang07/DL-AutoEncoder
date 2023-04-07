@@ -5,12 +5,12 @@ import torch
 import pandas as pd
 
 # BCE_loss = nn.BCELoss()
-def reconstruction_loss(x_reconstructed, x):
+def reconstruction_loss(x_hat, x):
     #return nn.BCELoss(reduction='sum')(x_reconstructed, x) / x.size(0)
-    return nn.MSELoss(reduction='sum')(x_reconstructed, x) / x.size(0)
+    return nn.MSELoss(reduction='sum')(x_hat, x)
 
 def kl_divergence_loss(mean, logvar):
-    return ((mean**2 + logvar.exp() - 1 - logvar) / 2).mean()
+    return - 0.5 * torch.sum(1+ logvar - mean.pow(2) - logvar.exp())
 
 def loss_function(x, x_hat, mean, log_var, beta):
     # reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
@@ -20,7 +20,7 @@ def loss_function(x, x_hat, mean, log_var, beta):
     reproduction_loss = reconstruction_loss(x_hat, x)
     KLD = beta * kl_divergence_loss(mean, log_var)
     # KLD = 0
-    return reproduction_loss + KLD
+    return reproduction_loss + KLD / x.size(0)
 
 #https://www.machinelearningnuggets.com/how-to-generate-images-with-variational-autoencoders-vae-and-keras/
 

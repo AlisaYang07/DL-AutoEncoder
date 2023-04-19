@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 test = True
 
-#I Think we shouldn't augment training, because this is an image reconstruciton task
+#Ref: https://github.com/huyvnphan/PyTorch_CIFAR10/blob/master/data.py
 """
 train_transform = T.Compose(
             [

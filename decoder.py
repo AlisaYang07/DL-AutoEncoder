@@ -2,6 +2,9 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 
+# Decoder is heavily inspired by ResNet18 VAE repo by Julian Stastny:
+# https://github.com/julianstastny/VAE-ResNet18-PyTorch
+
 class ResizeConv2d(nn.Module):
 
     def __init__(self, in_channels, out_channels, kernel_size, scale_factor, mode='nearest'):

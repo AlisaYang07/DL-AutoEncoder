@@ -5,6 +5,10 @@ from torchmetrics import Accuracy
 
 import numpy as np
 
+#Encoder Architecture was heavily referenced form Torch vision Resnet architecture: 
+# https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py
+# The pretrained resnet18 module weight came from this repo: https://github.com/huyvnphan/PyTorch_CIFAR10
+# 
 __all__ = [
     "ResNet",
     "resnet18",

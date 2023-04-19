@@ -6,17 +6,14 @@ import pandas as pd
 
 # BCE_loss = nn.BCELoss()
 def reconstruction_loss(x_hat, x):
-    #return nn.BCELoss(reduction='sum')(x_reconstructed, x) / x.size(0)
+
     return nn.MSELoss(reduction='sum')(x_hat, x)
 
 def kl_divergence_loss(mean, logvar):
     return - 0.5 * torch.sum(1+ logvar - mean.pow(2) - logvar.exp())
 
 def loss_function(x, x_hat, mean, log_var, beta):
-    # reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
-    #reproduction_loss = ((x - x_hat) **2).sum()
-    # reproduction_loss = MSE_loss(x_hat, x)
-    # KLD      = - 0.5 * torch.sum(1+ log_var - mean.pow(2) - log_var.exp())
+
     reproduction_loss = reconstruction_loss(x_hat, x)
     KLD = beta * kl_divergence_loss(mean, log_var)
     return reproduction_loss + KLD 
@@ -24,16 +21,8 @@ def loss_function(x, x_hat, mean, log_var, beta):
 #https://www.machinelearningnuggets.com/how-to-generate-images-with-variational-autoencoders-vae-and-keras/
 
 
-# def gaussian_likelihood(self, x_hat, logscale, x):
-#         scale = torch.exp(logscale)
-#         mean = x_hat
-#         dist = torch.distributions.Normal(mean, scale)
-
-#         # measure prob of seeing image under p(x|z)
-#         log_pxz = dist.log_prob(x)
-#         return log_pxz.sum(dim=(1, 2, 3))
-
-
+##Main training loop was heavily referenced from tutorial 6 from CSC2503: Foundations of Computer Vision Instructor/Author is Babak Taati
+#https://colab.research.google.com/drive/1_fKe59FCfAFjNlR-2zKnjlJ1m-krxMH6?usp=sharing
 def train(model,
           optimizer,
           train_loader,
